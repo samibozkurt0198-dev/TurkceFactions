@@ -1,0 +1,22 @@
+name: Jar Derle
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Java 17 Kur
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Maven ile Derle
+        run: mvn clean package
+      - name: Jar Dosyasini Kaydet
+        uses: actions/upload-artifact@v3
+        with:
+          name: TurkceFactions-Jar
+          path: target/*.jar
+
