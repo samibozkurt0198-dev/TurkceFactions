@@ -8,18 +8,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.cumulus.form.CustomForm;
 import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.cumulus.util.FormImage;
+import org.geysermc.floodgate.api.FloodgateApi;
 
 public class Klan extends JavaPlugin implements CommandExecutor {
 
     @Override
     public void onEnable() {
-        // config.yml yoksa otomatik oluştur
         saveDefaultConfig();
 
         if (getCommand("klan") != null) {
             getCommand("klan").setExecutor(this);
         }
-        getLogger().info("§aTurkce Bedrock Klan Eklentisi (Config Destekli) Aktif!");
+        getLogger().info("§aTurkce Bedrock Klan Eklentisi Aktif!");
     }
 
     @Override
@@ -29,7 +29,13 @@ public class Klan extends JavaPlugin implements CommandExecutor {
             return true;
         }
 
-        // Ana Mobil Menü (SimpleForm)
+        // Oyuncu Bedrock (mobil) cihazdan mı girmiş kontrol et
+        if (!FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
+            player.sendMessage("§cBu menuyu sadece Bedrock/Mobil oyunculari kullanabilir.");
+            return true;
+        }
+
+        // Ana Mobil Menü
         SimpleForm form = SimpleForm.builder()
                 .title("§8=== §bKLAN MENUSU §8===")
                 .content("Lutfen yapmak istediginiz islemi secin:")
@@ -38,22 +44,19 @@ public class Klan extends JavaPlugin implements CommandExecutor {
                 .validResultHandler(response -> {
                     int clickedButtonId = response.clickedButtonId();
                     if (clickedButtonId == 0) {
-                        // Klan Kurma Penceresini Aç
                         openKlanKurForm(player);
                     } else if (clickedButtonId == 1) {
-                        // Klan Bilgisini Göster
                         showKlanInfo(player);
                     }
                 })
                 .build();
 
-        player.sendForm(form);
+        // Formu Floodgate API ile oyuncuya gönder
+        FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
         return true;
     }
 
-    // Mobil Metin Kutulu Klan Kurma Penceresi
     private void openKlanKurForm(Player player) {
-        // Oyuncunun zaten klanı var mı kontrol et
         if (getConfig().contains("oyuncular." + player.getUniqueId())) {
             String mevcutKlan = getConfig().getString("oyuncular." + player.getUniqueId() + ".klan");
             player.sendMessage("§cZaten §e" + mevcutKlan + " §cadli bir klandasiniz!");
@@ -73,35 +76,29 @@ public class Klan extends JavaPlugin implements CommandExecutor {
 
                     klanAdi = klanAdi.trim();
 
-                    // Klan ismi daha önce alınmış mı kontrol et
                     if (getConfig().contains("klanlar." + klanAdi.toLowerCase())) {
                         player.sendMessage("§cBu isimde bir klan zaten var!");
                         return;
                     }
 
-                    // Config.yml dosyasına verileri kaydet
                     String uuid = player.getUniqueId().toString();
                     
-                    // 1. Klan Verileri
                     getConfig().set("klanlar." + klanAdi.toLowerCase() + ".isim", klanAdi);
                     getConfig().set("klanlar." + klanAdi.toLowerCase() + ".lider", player.getName());
                     getConfig().set("klanlar." + klanAdi.toLowerCase() + ".liderUUID", uuid);
 
-                    // 2. Oyuncu Verileri
                     getConfig().set("oyuncular." + uuid + ".klan", klanAdi);
                     getConfig().set("oyuncular." + uuid + ".rol", "Lider");
 
-                    // Kaydet
                     saveConfig();
 
                     player.sendMessage("§a[Klan] §e" + klanAdi + " §fisimli klaniniz basariyla olusturuldu!");
                 })
                 .build();
 
-        player.sendForm(klanKurForm);
+        FloodgateApi.getInstance().sendForm(player.getUniqueId(), klanKurForm);
     }
 
-    // Klan Bilgileri Gösterme
     private void showKlanInfo(Player player) {
         String uuid = player.getUniqueId().toString();
 
