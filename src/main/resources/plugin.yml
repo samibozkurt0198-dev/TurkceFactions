@@ -4,6 +4,5 @@ main: com.samet.turkcefactions.Klan
 api-version: 1.20
 commands:
   klan:
-    description: Turkce Klan Menusu
+    description: Turkce Bedrock Klan Menusu
     usage: /klan
-
