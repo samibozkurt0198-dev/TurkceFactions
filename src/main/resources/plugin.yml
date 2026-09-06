@@ -2,7 +2,7 @@ name: TurkceFactions
 version: 1.0
 main: com.samet.turkcefactions.Klan
 api-version: 1.20
-softdepend: [Floodgate, Geyser-Spigot]
+softdepend: [Floodgate]
 commands:
   klan:
     description: Turkce Bedrock Klan Menusu
