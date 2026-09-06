@@ -49,6 +49,7 @@ public class Klan extends JavaPlugin implements CommandExecutor {
                 })
                 .build();
 
+        // Player.sendForm yerine FloodgateApi üzerinden gönderiyoruz
         FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
         return true;
     }
