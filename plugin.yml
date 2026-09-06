@@ -1,6 +1,6 @@
 name: TurkceFactions
 version: 1.0
-main: Klan
+main: com.samet.turkcefactions.Klan
 api-version: 1.20
 commands:
   klan:
