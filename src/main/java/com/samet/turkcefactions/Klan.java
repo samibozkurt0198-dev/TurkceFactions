@@ -29,13 +29,11 @@ public class Klan extends JavaPlugin implements CommandExecutor {
             return true;
         }
 
-        // Oyuncu Bedrock (mobil) cihazdan mı girmiş kontrol et
         if (!FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
             player.sendMessage("§cBu menuyu sadece Bedrock/Mobil oyunculari kullanabilir.");
             return true;
         }
 
-        // Ana Mobil Menü
         SimpleForm form = SimpleForm.builder()
                 .title("§8=== §bKLAN MENUSU §8===")
                 .content("Lutfen yapmak istediginiz islemi secin:")
@@ -51,7 +49,6 @@ public class Klan extends JavaPlugin implements CommandExecutor {
                 })
                 .build();
 
-        // Formu Floodgate API ile oyuncuya gönder
         FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
         return true;
     }
