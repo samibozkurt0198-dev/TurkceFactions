@@ -1,30 +1,21 @@
 package com.samet.turkcefactions;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.geysermc.cumulus.form.SimpleForm;
+import org.geysermc.cumulus.util.FormImage;
 
-import java.util.Collections;
-
-public class Klan extends JavaPlugin implements CommandExecutor, Listener {
+public class Klan extends JavaPlugin implements CommandExecutor {
 
     @Override
     public void onEnable() {
         if (getCommand("klan") != null) {
             getCommand("klan").setExecutor(this);
         }
-        getServer().getPluginManager().registerEvents(this, this);
-        getLogger().info("§aTurkce Factions Eklentisi Aktif!");
+        getLogger().info("§aTurkce Bedrock Mobil Klan Eklentisi Aktif!");
     }
 
     @Override
@@ -34,47 +25,23 @@ public class Klan extends JavaPlugin implements CommandExecutor, Listener {
             return true;
         }
 
-        Inventory gui = Bukkit.createInventory(null, 27, "§8=== §bKlan Yonetim Menusu §8===");
+        // Bedrock Ekran Formu (Dokunmatik Menü)
+        SimpleForm form = SimpleForm.builder()
+                .title("§8=== §bKLAN MENUSU §8===")
+                .content("Lutfen yapmak istediginiz islemi secin:")
+                .button("§a§lKlan Kur", FormImage.Type.URL, "https://textures.minecraft.net/texture/b05688773923ea505745fc7e6168e0e09e3be31d816048556cef289eb4e1d")
+                .button("§e§lKlan Bilgileri", FormImage.Type.URL, "https://textures.minecraft.net/texture/d3471018287532353a43f8e58319f39e31d3e23078a0d0a519a4d80a3a78e7f1")
+                .validResultHandler(response -> {
+                    int clickedButtonId = response.clickedButtonId();
+                    if (clickedButtonId == 0) {
+                        player.sendMessage("§a[Klan] §fKlan kurmak icin: §e/klan kur <Isim>");
+                    } else if (clickedButtonId == 1) {
+                        player.sendMessage("§e[Klan] §fHenuz bir klaniniz yok.");
+                    }
+                })
+                .build();
 
-        ItemStack klanKur = new ItemStack(Material.NETHER_STAR);
-        ItemMeta kurMeta = klanKur.getItemMeta();
-        if (kurMeta != null) {
-            kurMeta.setDisplayName("§a§lKlan Kur");
-            kurMeta.setLore(Collections.singletonList("§7Yeni bir klan olustur."));
-            klanKur.setItemMeta(kurMeta);
-        }
-
-        ItemStack klanBilgi = new ItemStack(Material.BOOK);
-        ItemMeta bilgiMeta = klanBilgi.getItemMeta();
-        if (bilgiMeta != null) {
-            bilgiMeta.setDisplayName("§e§lKlan Bilgileri");
-            bilgiMeta.setLore(Collections.singletonList("§7Mevcut klanini gor."));
-            klanBilgi.setItemMeta(bilgiMeta);
-        }
-
-        gui.setItem(11, klanKur);
-        gui.setItem(15, klanBilgi);
-
-        player.openInventory(gui);
+        player.sendForm(form);
         return true;
-    }
-
-    @EventHandler
-    public void onMenuClick(InventoryClickEvent event) {
-        if (event.getView().getTitle().equals("§8=== §bKlan Yonetim Menusu §8===")) {
-            event.setCancelled(true);
-            if (event.getCurrentItem() == null || !event.getCurrentItem().hasItemMeta()) return;
-
-            Player player = (Player) event.getWhoClicked();
-            String itemIsmi = event.getCurrentItem().getItemMeta().getDisplayName();
-
-            if (itemIsmi.equals("§a§lKlan Kur")) {
-                player.closeInventory();
-                player.sendMessage("§a[Klan] §fKlan kurmak icin: §e/klan kur <Isim>");
-            } else if (itemIsmi.equals("§e§lKlan Bilgileri")) {
-                player.closeInventory();
-                player.sendMessage("§e[Klan] §fHenuz bir klaniniz yok.");
-            }
-        }
     }
 }
