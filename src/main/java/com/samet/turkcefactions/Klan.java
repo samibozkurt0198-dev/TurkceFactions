@@ -14,7 +14,10 @@ public class Klan extends JavaPlugin implements CommandExecutor {
 
     @Override
     public void onEnable() {
-        saveDefaultConfig();
+        // config.yml yoksa gomulu dosya aramadan sifirdan olustur
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdirs();
+        }
 
         if (getCommand("klan") != null) {
             getCommand("klan").setExecutor(this);
@@ -49,7 +52,6 @@ public class Klan extends JavaPlugin implements CommandExecutor {
                 })
                 .build();
 
-        // Player.sendForm yerine FloodgateApi üzerinden gönderiyoruz
         FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
         return true;
     }
