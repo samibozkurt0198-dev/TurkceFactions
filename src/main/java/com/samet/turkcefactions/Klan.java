@@ -16,13 +16,11 @@ import org.bukkit.scoreboard.*;
 import org.geysermc.cumulus.form.CustomForm;
 import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.cumulus.util.FormImage;
-import org.geysermc.floodgate.api.FloodgateApi;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class Klan extends JavaPlugin implements CommandExecutor, Listener {
-
-    private final Map<UUID, String> klanDavetleri = new HashMap<>();
 
     public static class ShopItem {
         public String displayName;
@@ -64,7 +62,7 @@ public class Klan extends JavaPlugin implements CommandExecutor, Listener {
         registerCommand("pay");
 
         Bukkit.getScheduler().runTaskTimer(this, this::updateAllScoreboards, 20L, 60L);
-        getLogger().info("§aTurkce Bedrock Factions, Arsa, Market & Ekonomi Eklentisi Aktif!");
+        getLogger().info("§aTurkce Factions, Arsa, Market & Ekonomi Eklentisi Aktif!");
     }
 
     private void registerCommand(String name) {
@@ -152,6 +150,20 @@ public class Klan extends JavaPlugin implements CommandExecutor, Listener {
         player.setScoreboard(board);
     }
 
+    // --- GÜVENLİ FLOODGATE / BEDROCK FORM GÖNDERME METODU ---
+    private boolean sendBedrockForm(Player player, Object form) {
+        try {
+            Class<?> apiClass = Class.forName("org.geysermc.floodgate.api.FloodgateApi");
+            Method getInstanceMethod = apiClass.getMethod("getInstance");
+            Object apiInstance = getInstanceMethod.invoke(null);
+            Method sendFormMethod = apiClass.getMethod("sendForm", UUID.class, Object.class);
+            return (boolean) sendFormMethod.invoke(apiInstance, player.getUniqueId(), form);
+        } catch (Exception e) {
+            player.sendMessage("§c[Hata] Bedrock Arayuzu yuklenemedi. Sunucu destegi pasif olabilir.");
+            return false;
+        }
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
@@ -192,12 +204,6 @@ public class Klan extends JavaPlugin implements CommandExecutor, Listener {
             return true;
         }
 
-        // Floodgate yüklü olduğu takdirde oyuncunun mobil mi Java mı olduğunu kontrol eder
-        if (Bukkit.getPluginManager().isPluginEnabled("Floodgate") && !FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
-            player.sendMessage("§cBu menuyu sadece Bedrock/Mobil oyunculari kullanabilir.");
-            return true;
-        }
-
         switch (cmd) {
             case "klan" -> openAnaKlanMenusu(player);
             case "arsa" -> openArsaMenusu(player);
@@ -228,7 +234,7 @@ public class Klan extends JavaPlugin implements CommandExecutor, Listener {
             else if (btn == 4) openMarketKategoriListesi(player, "Ekipman");
         });
 
-        FloodgateApi.getInstance().sendForm(player.getUniqueId(), form.build());
+        sendBedrockForm(player, form.build());
     }
 
     private void openMarketAramaForm(Player player) {
@@ -245,7 +251,7 @@ public class Klan extends JavaPlugin implements CommandExecutor, Listener {
                 })
                 .build();
 
-        FloodgateApi.getInstance().sendForm(player.getUniqueId(), form);
+        sendBedrockForm(player, form);
     }
 
     private void showSearchResults(Player player, String query) {
@@ -276,7 +282,7 @@ public class Klan extends JavaPlugin implements CommandExecutor, Listener {
             }
         });
 
-        FloodgateApi.getInstance().sendForm(player.getUniqueId(), form.build());
+        sendBedrockForm(player, form.build());
     }
 
     private void openMarketKategoriListesi(Player player, String category) {
@@ -302,7 +308,7 @@ public class Klan extends JavaPlugin implements CommandExecutor, Listener {
             }
         });
 
-        FloodgateApi.getInstance().sendForm(player.getUniqueId(), form.build());
+        sendBedrockForm(player, form.build());
     }
 
     private void buyShopItem(Player player, ShopItem item) {
