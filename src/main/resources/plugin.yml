@@ -2,12 +2,11 @@ name: TurkceFactions
 version: 2.0
 main: com.samet.turkcefactions.Klan
 api-version: 1.20
-softdepend: [Floodgate]
 commands:
   klan:
     description: Klan menusunu acar.
   arsa:
-    description: Arsa alim ve isinlanma menusunu acar.
+    description: Arsa menusunu acar.
   kit:
     description: Kit menusunu acar.
   kc:
