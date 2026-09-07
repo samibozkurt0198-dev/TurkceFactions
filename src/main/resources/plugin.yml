@@ -5,5 +5,14 @@ api-version: 1.20
 softdepend: [Floodgate]
 commands:
   klan:
-    description: Turkce Bedrock Klan Menusu
+    description: Bedrock Klan Menusu
     usage: /klan
+  arsa:
+    description: 64x64 Satilik Arsa Menusu
+    usage: /arsa
+  kit:
+    description: Kit Menusu
+    usage: /kit
+  kc:
+    description: Klan Sohbeti
+    usage: /kc <mesaj>
